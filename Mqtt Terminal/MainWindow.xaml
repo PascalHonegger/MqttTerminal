@@ -7,6 +7,18 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="100px"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Menu>
+            <MenuItem Header="File">
+                <MenuItem Header="Exit" Click="Exit_Click"/>
+            </MenuItem>
+        </Menu>
+        <Image Grid.Row="1" Source="Resources/logo.png" HorizontalAlignment="Left" />
+        <TextBlock x:Name="TitleText" Grid.Row="1"/>
+        <ContentPresenter x:Name="MainContent" Grid.Row="2"/>
     </Grid>
 </Window>
