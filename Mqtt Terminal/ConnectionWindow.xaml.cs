@@ -100,6 +100,12 @@ namespace Mqtt_Terminal
 
         private void PostTopic_Click(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrEmpty(TopicBox.Text))
+            {
+                MessageBox.Show("Topic is mandatory");
+                return;
+            }
+
             _broker.Publish(TopicBox.Text, ContentBox.Text, (Qos)QosComboBox.SelectedItem, Retain.IsChecked ?? false);
         }
 

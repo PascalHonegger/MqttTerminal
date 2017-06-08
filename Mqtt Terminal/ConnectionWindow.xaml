@@ -7,12 +7,12 @@
         mc:Ignorable="d" Height="300" Width="300" Closed="Window_Closed" Loaded="Window_Loaded" >
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="2*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0">
+        <StackPanel Grid.Row="0" VerticalAlignment="Stretch">
             <Button x:Name="ConnectButton" Click="ConnectButton_Click" Content="Connect"/>
             <Button x:Name="SubscribeButton" Click="SubscribeButton_Click" Content="Subscribe" IsEnabled="False"/>
             <StackPanel Orientation="Horizontal">
@@ -23,43 +23,41 @@
                 <Label Content="Filter: " VerticalAlignment="Center"/>
                 <TextBox VerticalAlignment="Center" MinWidth="100px" x:Name="FilterText" TextChanged="FilterText_TextChanged"/>
             </StackPanel>
-            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                <ListView x:Name="ReceivedListView">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="Topic">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Topic}" TextWrapping="Wrap"/>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                            <GridViewColumn Header="Content">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Content}" FontSize="10" FontFamily="Courier New"/>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                            <GridViewColumn Header="Retain">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <CheckBox IsChecked="{Binding IsRetainFlagSet}" IsEnabled="False"/>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                            <GridViewColumn Header="Qos" DisplayMemberBinding="{Binding Qos}" />
-                            <GridViewColumn Header="Last Received">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding ReceivedDate, StringFormat=HH:mm}" ToolTip="{Binding ReceivedDate}" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                        </GridView>
-                    </ListView.View>
-                </ListView>
-            </ScrollViewer>
+            <ListView x:Name="ReceivedListView" ScrollViewer.VerticalScrollBarVisibility="Visible" VerticalAlignment="Stretch">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Topic">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Topic}" TextWrapping="Wrap"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Content">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Content}" FontSize="10" FontFamily="Courier New"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Retain">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsChecked="{Binding IsRetainFlagSet}" IsEnabled="False"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Qos" DisplayMemberBinding="{Binding Qos}" />
+                        <GridViewColumn Header="Last Received">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding ReceivedDate, StringFormat=HH:mm:ss.fff}" ToolTip="{Binding ReceivedDate}" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
         </StackPanel>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
