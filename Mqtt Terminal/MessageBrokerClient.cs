@@ -15,12 +15,13 @@ namespace Mqtt_Terminal
 {
     public class MessageBrokerClient
     {
-        public MessageBrokerClient(string brokerAddress, Qos qos, bool cleanSession)
+        public MessageBrokerClient(string brokerAddress, string clientId, bool cleanSession, bool connectOnFailure, bool subscribeOnFailure, int reconnectionInterval)
         {
-            //TODO good?
-            _clientId = HostName;
-            _qos = qos;
+            _clientId = clientId;
             _cleanSession = cleanSession;
+            _connectOnFailure = connectOnFailure;
+            _subscribeOnFailure = subscribeOnFailure;
+            _reconnectionInterval = reconnectionInterval;
 
             _mqttClient = new MqttClient(brokerAddress);
             _mqttClient.ConnectionClosed += ReceivedMqttClientConnectionClosed;
@@ -30,12 +31,7 @@ namespace Mqtt_Terminal
 
         public event EventHandler<ConnectionStateChangedEventArgs> ConnectionStateChanged = delegate { };
 
-        public async Task ConnectAsync(string topicToSubscribe, Action<ReceivedMessageArguments> receivedMessageAction, Qos qos)
-        {
-            await ConnectAsync(new Subscription(topicToSubscribe, receivedMessageAction, qos));
-        }
-
-        public void Publish(string topic, string value, Qos qos = Qos.Default, bool retain = false, bool sendOnlyChanges = false)
+         public void Publish(string topic, string value, Qos qos = Qos.ExactlyOnce, bool retain = false, bool sendOnlyChanges = false)
         {
             try
             {
@@ -49,7 +45,6 @@ namespace Mqtt_Terminal
                     }
                 }
 
-                 Qos qos2 = qos == Qos.Default ? _qos : qos;
                 byte[] message = Encoding.UTF8.GetBytes(value);
                 lock (_lock)
                 {
@@ -57,7 +52,7 @@ namespace Mqtt_Terminal
 
                     _resetEvent.Reset();
                 }
-                ushort id = _mqttClient.Publish(topic, message, (byte)qos2, retain);
+                ushort id = _mqttClient.Publish(topic, message, (byte)qos, retain);
             }
             catch (Exception ex)
             {
@@ -112,33 +107,33 @@ namespace Mqtt_Terminal
             }
         }
 
-        public async Task ConnectAsync(params Subscription[] subscriptions)
+        public async Task ConnectAsync(bool subscribeSubscriptions, params Subscription[] subscriptions)
         {
+            lock (_lock)
+            {
+                _subscriptions = subscriptions;
+            }
+
             //Only one reconnect at once
             using (await _reconnectionLock.LockAsync())
             {
-                lock (_lock)
-                {
-                    _subscriptions = subscriptions;
-                    _syncContext = SynchronizationContext.Current;
-                }
-
                 while (!_mqttClient.IsConnected && !_hasBeenDisconnected)
                 {
                     try
                     {
                         if (!SuspendReconnecting)
                         {
-                            if (SynchronizationContext.Current != null)
+                            await Task.Run(() =>
                             {
-                                // We should not block this thread 
-                                await Task.Run(() => Connect());
-                            }
-                            else
-                            {
-                                //Called by any background thread
-                                Connect();
-                            }
+                                try
+                                {
+                                    Connect();
+                                }
+                                catch (Exception)
+                                {
+                                    // Ignored
+                                }
+                            });
                         }
                     }
                     catch (Exception ex)
@@ -148,10 +143,11 @@ namespace Mqtt_Terminal
 
                     if (!_mqttClient.IsConnected)
                     {
-                        await Task.Delay(ReconnectIntervalInMs);
+                        await Task.Delay(_reconnectionInterval * 1000);
                     }
                 }
-                if (_mqttClient.IsConnected)
+
+                if (subscribeSubscriptions)
                 {
                     ReceivedSuccessfullyReconnected();
                 }
@@ -165,20 +161,7 @@ namespace Mqtt_Terminal
                 throw new ArgumentNullException(nameof(actionToExcute));
             }
 
-            SynchronizationContext syncContext;
-
-            lock (_lock)
-            {
-                syncContext = _syncContext;
-            }
-            if (syncContext != null)
-            {
-                syncContext.Post(state => actionToExcute(), null);
-            }
-            else
-            {
-                actionToExcute();
-            }
+            Application.Current.Dispatcher.Invoke(actionToExcute);
         }
 
         private void SubscribeInternal(Subscription subscription)
@@ -197,45 +180,52 @@ namespace Mqtt_Terminal
             return new ReceivedMessageArguments(args.Topic, Encoding.UTF8.GetString(args.Message))
             {
                 IsRetainFlagSet = args.Retain,
-                IsDuplicatedFlagSet = args.DupFlag
+                IsDuplicatedFlagSet = args.DupFlag,
+                Qos = args.QosLevel
             };
         }
 
         private void ReceivedMqttMessagePublished(object sender, MqttMsgPublishedEventArgs e)
         {
-            lock (_lock)
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                if (--_publishedButNotConfirmedMessages <= 0)
+                lock (_lock)
                 {
-                    _resetEvent.Set();
+                    if (--_publishedButNotConfirmedMessages <= 0)
+                    {
+                        _resetEvent.Set();
+                    }
                 }
-            }
+            });
         }
 
         private void ReceivedMqttMessage(object sender, MqttMsgPublishEventArgs args)
         {
-            Subscription subscription;
-
-            lock (_lock)
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                subscription = _subscriptions.Length == 1 ? _subscriptions.First() : _subscriptions.FirstOrDefault(i => i.IsMatchingTopic(args.Topic));
-            }
+                Subscription subscription;
 
-            Action actionToExecute = null;
+                lock (_lock)
+                {
+                    subscription = _subscriptions.Length == 1 ? _subscriptions.First() : _subscriptions.FirstOrDefault(i => i.IsMatchingTopic(args.Topic));
+                }
 
-            if (subscription != null)
-            {
-                actionToExecute = () => subscription.ReceivedMessageAction(ParseContent(args));
-            }
+                Action actionToExecute = null;
 
-            try
-            {
-                TryToExecuteActionWithSynchronizationContext(actionToExecute);
-            }
-            catch (Exception ex)
-            {
-                //Ignore
-            }
+                if (subscription != null)
+                {
+                    actionToExecute = () => subscription.ReceivedMessageAction(ParseContent(args));
+                }
+
+                try
+                {
+                    TryToExecuteActionWithSynchronizationContext(actionToExecute);
+                }
+                catch (Exception ex)
+                {
+                    //Ignore
+                }
+            });
         }
 
         private bool Connect()
@@ -272,7 +262,7 @@ namespace Mqtt_Terminal
                     subscriptions = _subscriptions;
                 }
 
-                await ConnectAsync(subscriptions);
+                await ConnectAsync(_subscribeOnFailure, subscriptions);
             }
             catch (Exception ex)
             {
@@ -283,6 +273,7 @@ namespace Mqtt_Terminal
         private void ReceivedSuccessfullyReconnected()
         {
             RaiseConnectionStateChanged(true);
+
             ResubscribeTopics();
         }
 
@@ -303,12 +294,18 @@ namespace Mqtt_Terminal
 
         private void ReceivedMqttClientConnectionClosed(object sender, EventArgs e)
         {
-            if (!IsConnected)
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                RaiseConnectionStateChanged(false);
+                if (!IsConnected)
+                {
+                    RaiseConnectionStateChanged(false);
 
-                Reconnect();
-            }
+                    if (_connectOnFailure)
+                    {
+                        Reconnect();
+                    }
+                }
+            });
         }
 
         private void RaiseConnectionStateChanged(bool isConnected)
@@ -318,11 +315,9 @@ namespace Mqtt_Terminal
 
         public bool IsConnected => _mqttClient.IsConnected;
 
+        public bool HasSubscriptions => _subscriptions != null && _subscriptions.Length > 0;
+
         public bool SuspendReconnecting { get; set; } = false;
-
-        public int ReconnectIntervalInMs { get; } = 3000;
-
-        public string HostName => Environment.MachineName;
 
         private int _publishedButNotConfirmedMessages;
 
@@ -340,12 +335,13 @@ namespace Mqtt_Terminal
         private readonly MqttClient _mqttClient;
         private readonly AsyncLock _reconnectionLock = new AsyncLock();
         private bool _hasBeenDisconnected;
-        private SynchronizationContext _syncContext;
         private readonly Dictionary<string, object> _currentValueForTopic = new Dictionary<string, object>();
         private const int DefaultKeepAlivePeriod = 30;
         private string _clientId;
-        private Qos _qos;
         private bool _cleanSession;
+        private bool _connectOnFailure;
+        private bool _subscribeOnFailure;
+        private int _reconnectionInterval;
     }
 
     /// <summary>
@@ -354,11 +350,6 @@ namespace Mqtt_Terminal
     /// </summary>
     public enum Qos
     {
-        /// <summary>
-        /// Default from defined ITopic or from Constanst
-        /// </summary>
-        Default = -1,
-
         /// <summary>
         /// Qos 0: Fire and forget - the message may not be delivered
         /// </summary>
@@ -372,12 +363,7 @@ namespace Mqtt_Terminal
         /// <summary>
         /// Once and one only - the message will be delivered exactly once.
         /// </summary>
-        ExactlyOnce = 2,
-
-        /// <summary>
-        /// Returned from Library, if subscribe to broker was not successful
-        /// </summary>
-        GrantedFailure = 128
+        ExactlyOnce = 2
     }
 
     public class ConnectionStateChangedEventArgs : EventArgs
@@ -417,6 +403,10 @@ namespace Mqtt_Terminal
         public object UnparsableValue { get; set; }
 
         public bool IsDuplicatedFlagSet { get; set; }
+
+        public DateTime ReceivedDate { get; } = DateTime.Now;
+
+        public byte Qos { get; set; }
     }
 
     public class Subscription

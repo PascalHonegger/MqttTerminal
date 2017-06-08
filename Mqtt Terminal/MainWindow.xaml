@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Mqtt_Terminal"
         xmlns:prop="clr-namespace:Mqtt_Terminal.Properties"
         mc:Ignorable="d"
-        Title="Mqtt Terminal" Height="350" Width="525" >
+        Title="Mqtt Terminal" Height="350" Width="525" Closed="Window_Closed">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -28,8 +28,9 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <DockPanel LastChildFill="True" HorizontalAlignment="Stretch">
-                        <Button Click="Edit_Connection" DockPanel.Dock="Right" Content="Edit"/>
-                        <Button Click="Remove_Connection" DockPanel.Dock="Right" Content="X" ToolTip="Remove"/>
+                        <Button Click="Remove_Connection" DockPanel.Dock="Right" Content="X" ToolTip="Remove" VerticalAlignment="Center"/>
+                        <Button Click="Edit_Connection" DockPanel.Dock="Right" Content="Edit" VerticalAlignment="Center"/>
+                        <Button Click="Open_Connection" DockPanel.Dock="Right" Content="Open" VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding Name}" DockPanel.Dock="Left" />
                     </DockPanel>
                 </DataTemplate>

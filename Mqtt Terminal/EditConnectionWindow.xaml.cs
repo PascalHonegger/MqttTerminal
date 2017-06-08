@@ -21,6 +21,8 @@ namespace Mqtt_Terminal
 
             _toEdit = toEdit;
             DataContext = toEdit;
+
+            DisplaySubscriptions();
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)

@@ -15,7 +15,17 @@ namespace Mqtt_Terminal
 
             CheckMenuItems();
 
+            OpenConnectionWithAutoOpen();
+
             DisplayConnectionInListView();
+        }
+
+        private void OpenConnectionWithAutoOpen()
+        {
+            foreach (var connection in SettingsManager.Instance.CurrentSettings.Connections.Where(c => c.OpenOnStartup))
+            {
+                new ConnectionWindow(connection).Show();
+            }
         }
 
         private void CheckMenuItems()
@@ -77,7 +87,7 @@ namespace Mqtt_Terminal
             // Let user edit it
             var save = new EditConnectionWindow(connection).ShowDialog();
 
-            if(save == true)
+            if (save == true)
             {
                 SettingsManager.Instance.CurrentSettings.Connections = SettingsManager.Instance.CurrentSettings.Connections.Concat(new[] { connection }).ToArray();
             }
@@ -89,7 +99,7 @@ namespace Mqtt_Terminal
         private void Edit_Connection(object sender, RoutedEventArgs e)
         {
             // Clicked connection
-            var connection = (Connection)((Button) (sender)).DataContext;
+            var connection = (Connection)((Button)(sender)).DataContext;
 
             // Let user edit it
             var save = new EditConnectionWindow(connection).ShowDialog();
@@ -123,6 +133,20 @@ namespace Mqtt_Terminal
             {
                 ConListView.Items.Add(connection);
             }
+        }
+
+        private void Open_Connection(object sender, RoutedEventArgs e)
+        {
+            // Clicked connection
+            var connection = (Connection)((Button)(sender)).DataContext;
+
+            // Open it
+            new ConnectionWindow(connection).Show();
+        }
+
+        private void Window_Closed(object sender, System.EventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }

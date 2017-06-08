@@ -90,11 +90,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ConnectionWindow.xaml.cs">
+      <DependentUpon>ConnectionWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="EditConnectionWindow.xaml.cs">
       <DependentUpon>EditConnectionWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="FirstView.xaml.cs">
-      <DependentUpon>FirstView.xaml</DependentUpon>
     </Compile>
     <Compile Include="MessageBrokerClient.cs" />
     <Compile Include="Properties\Resources.de.Designer.cs">
@@ -104,11 +104,11 @@
     </Compile>
     <Compile Include="Settings.cs" />
     <Compile Include="ViewModelBase.cs" />
-    <Page Include="EditConnectionWindow.xaml">
+    <Page Include="ConnectionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="FirstView.xaml">
+    <Page Include="EditConnectionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
