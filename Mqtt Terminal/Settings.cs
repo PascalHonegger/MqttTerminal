@@ -65,7 +65,9 @@ namespace Mqtt_Terminal
     {
         public Connection()
         {
-            ClientId = $"{Environment.MachineName}-{DateTime.Now.Ticks}";
+            var now = DateTime.Now;
+            var timeRange = now - now.Date;
+            ClientId = $"{Environment.MachineName}-{(int)timeRange.TotalMilliseconds}";
             Name = $"{ClientId}@{Hostname}";
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 
@@ -62,12 +63,14 @@ namespace Mqtt_Terminal
 
         private void ReceivedSubscription(SerializedSubscription ss, ReceivedMessageArguments arg)
         {
-            ReceivedListView.Items.Add(arg);
+            _allMessages.Add(arg);
 
-            if(ReceivedListView.Items.Count > _connection.MaxMessagesStored)
+            if (_allMessages.Count > _connection.MaxMessagesStored)
             {
-                ReceivedListView.Items.RemoveAt(0);
+                _allMessages.RemoveAt(0);
             }
+
+            ApplyFilter();
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -98,6 +101,33 @@ namespace Mqtt_Terminal
         private void PostTopic_Click(object sender, RoutedEventArgs e)
         {
             _broker.Publish(TopicBox.Text, ContentBox.Text, (Qos)QosComboBox.SelectedItem, Retain.IsChecked ?? false);
+        }
+
+        private List<ReceivedMessageArguments> _allMessages = new List<ReceivedMessageArguments>();
+
+        private void FilterText_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            ApplyFilter();
+        }
+
+        private void ApplyFilter()
+        {
+            ReceivedListView.Items.Clear();
+
+            if(string.IsNullOrEmpty(FilterText.Text))
+            {
+                foreach (var item in _allMessages)
+                {
+                    ReceivedListView.Items.Add(item);
+                }
+            }
+            else
+            {
+                foreach (var item in _allMessages.Where(m => m.Content.ToLowerInvariant().Contains(FilterText.Text.ToLowerInvariant())))
+                {
+                    ReceivedListView.Items.Add(item);
+                }
+            }
         }
     }
 }

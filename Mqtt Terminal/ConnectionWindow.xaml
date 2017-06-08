@@ -19,6 +19,10 @@
                 <Label Content="Amount of elements: " VerticalAlignment="Center"/>
                 <TextBlock Text="{Binding Items.Count, ElementName=ReceivedListView, Mode=OneWay}" VerticalAlignment="Center"/>
             </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Filter: " VerticalAlignment="Center"/>
+                <TextBox VerticalAlignment="Center" MinWidth="100px" x:Name="FilterText" TextChanged="FilterText_TextChanged"/>
+            </StackPanel>
             <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                 <ListView x:Name="ReceivedListView">
                     <ListView.View>
