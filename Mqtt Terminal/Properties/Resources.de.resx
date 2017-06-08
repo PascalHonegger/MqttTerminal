@@ -118,48 +118,48 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AutoConnect" xml:space="preserve">
-    <value>Auto-connect when opened</value>
+    <value>Beim Start automatisch verbinden</value>
   </data>
   <data name="AutoOpen" xml:space="preserve">
-    <value>Auto-open at start-up</value>
+    <value>Beim Stat automatisch öffnen</value>
   </data>
   <data name="AutoSub" xml:space="preserve">
-    <value>Auto-subscribe when opened</value>
+    <value>Beim Start automatisch abonnieren</value>
   </data>
   <data name="CleanSession" xml:space="preserve">
-    <value>Clean session</value>
+    <value>Session leeren</value>
   </data>
   <data name="ClientId" xml:space="preserve">
     <value>Client ID</value>
   </data>
   <data name="English" xml:space="preserve">
-    <value>English</value>
-  </data>
-  <data name="File" xml:space="preserve">
-    <value>File</value>
+    <value>Englisch</value>
   </data>
   <data name="German" xml:space="preserve">
-    <value>German</value>
-  </data>
-  <data name="Language" xml:space="preserve">
-    <value>Language</value>
+    <value>Deutsch</value>
   </data>
   <data name="MaxMessages" xml:space="preserve">
-    <value>Max messages stored</value>
+    <value>Maximal gespeicherte Nachrichten</value>
   </data>
   <data name="ReconnectionInterval" xml:space="preserve">
-    <value>Reconnection interval [s]</value>
+    <value>Erneut Verbinden Interval [s]</value>
   </data>
   <data name="ReconnectOnFailure" xml:space="preserve">
-    <value>Reconnect on failure</value>
+    <value>Bei Fehler erneut verbinden</value>
   </data>
   <data name="ResubscribeOnFailure" xml:space="preserve">
-    <value>Resubscribe on failure</value>
+    <value>Bei Fehler erneut Abonnieren</value>
   </data>
   <data name="SaveConfiguration" xml:space="preserve">
-    <value>Save Configuration</value>
+    <value>Konfiguration speichern</value>
   </data>
   <data name="ServerUri" xml:space="preserve">
     <value>Server URI</value>
+  </data>
+  <data name="File" xml:space="preserve">
+    <value>Datei</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Sprache</value>
   </data>
 </root>

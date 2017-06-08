@@ -4,21 +4,37 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Mqtt_Terminal"
+        xmlns:prop="clr-namespace:Mqtt_Terminal.Properties"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="Mqtt Terminal" Height="350" Width="525" >
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="100px"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Menu>
-            <MenuItem Header="File">
-                <MenuItem Header="Exit" Click="Exit_Click"/>
+            <MenuItem Header="{x:Static prop:Resources.File}">
+                <MenuItem Header="{x:Static prop:Resources.SaveConfiguration}" Click="Save_Configuration"/>
+            </MenuItem>
+            <MenuItem Header="{x:Static prop:Resources.Language}">
+                <MenuItem Header="{x:Static prop:Resources.English}" x:Name="EnglishMenu" IsCheckable="True" Click="Select_English"/>
+                <MenuItem Header="{x:Static prop:Resources.German}" x:Name="GermanMenu" IsCheckable="True" Click="Select_German"/>
             </MenuItem>
         </Menu>
         <Image Grid.Row="1" Source="Resources/logo.png" HorizontalAlignment="Left" />
-        <TextBlock x:Name="TitleText" Grid.Row="1"/>
-        <ContentPresenter x:Name="MainContent" Grid.Row="2"/>
+        <ListView x:Name="ConListView" Grid.Row="2">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <DockPanel LastChildFill="True" HorizontalAlignment="Stretch">
+                        <Button Click="Edit_Connection" DockPanel.Dock="Right" Content="Edit"/>
+                        <Button Click="Remove_Connection" DockPanel.Dock="Right" Content="X" ToolTip="Remove"/>
+                        <TextBlock Text="{Binding Name}" DockPanel.Dock="Left" />
+                    </DockPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Button Click="Add_Connection" HorizontalAlignment="Right" Grid.Row="3" Content="Add"/>
     </Grid>
 </Window>
