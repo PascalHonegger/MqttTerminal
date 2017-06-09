@@ -7,7 +7,7 @@ namespace Mqtt_Terminal
 {
 	public class SettingsManager
 	{
-		private readonly string _pathToSettings = Path.Combine(Path.GetTempPath(), "MqttSettings.json");
+		private readonly string _pathToSettings = Environment.ExpandEnvironmentVariables(Properties.Settings.Default.DataPath);
 
 		public SettingsManager()
 		{

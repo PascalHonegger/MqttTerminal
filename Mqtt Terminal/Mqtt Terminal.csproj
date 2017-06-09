@@ -112,12 +112,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ConnectionWindow.xaml.cs">
-      <DependentUpon>ConnectionWindow.xaml</DependentUpon>
+    <Compile Include="ConnectionOverview.xaml.cs">
+      <DependentUpon>ConnectionOverview.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ConnectionControl.xaml.cs">
+      <DependentUpon>ConnectionControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="EditConnectionWindow.xaml.cs">
       <DependentUpon>EditConnectionWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MainView\LayoutService.cs" />
     <Compile Include="MessageBrokerClient.cs" />
     <Compile Include="Properties\Resources.de.Designer.cs">
       <DependentUpon>Resources.de.resx</DependentUpon>
@@ -127,7 +131,11 @@
     <Compile Include="Settings.cs" />
     <Compile Include="SettingsManager.cs" />
     <Compile Include="ViewModelBase.cs" />
-    <Page Include="ConnectionWindow.xaml">
+    <Page Include="ConnectionOverview.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ConnectionControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -169,6 +177,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -183,11 +192,6 @@
     </None>
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <Resource Include="Resources\logo.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -162,4 +162,13 @@
   <data name="ServerUri" xml:space="preserve">
     <value>Server URI</value>
   </data>
+  <data name="LayoutReload" xml:space="preserve">
+    <value>Reload layout</value>
+  </data>
+  <data name="LayoutSave" xml:space="preserve">
+    <value>Save layout</value>
+  </data>
+  <data name="Connections" xml:space="preserve">
+    <value>Connections</value>
+  </data>
 </root>

@@ -12,6 +12,11 @@ namespace Mqtt_Terminal
 	{
 		private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
 		{
+			if (e.Exception.Source == "Xceed.Wpf.AvalonDock")
+			{
+				e.Handled = true;
+			}
+
 			MessageBox.Show(e.Exception.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
 		}
 

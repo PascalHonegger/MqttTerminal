@@ -106,6 +106,15 @@ namespace Mqtt_Terminal.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connections.
+        /// </summary>
+        public static string Connections {
+            get {
+                return ResourceManager.GetString("Connections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to English.
         /// </summary>
         public static string English {
@@ -138,6 +147,24 @@ namespace Mqtt_Terminal.Properties {
         public static string Language {
             get {
                 return ResourceManager.GetString("Language", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reload layout.
+        /// </summary>
+        public static string LayoutReload {
+            get {
+                return ResourceManager.GetString("LayoutReload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save layout.
+        /// </summary>
+        public static string LayoutSave {
+            get {
+                return ResourceManager.GetString("LayoutSave", resourceCulture);
             }
         }
         

@@ -1,0 +1,28 @@
+﻿<UserControl x:Class="Mqtt_Terminal.ConnectionOverview"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Mqtt_Terminal"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+	    <Grid.RowDefinitions>
+		    <RowDefinition />
+		    <RowDefinition Height="Auto"/>
+	    </Grid.RowDefinitions>
+	    <ListView x:Name="ConListView" Grid.Row="0" d:DataContext="{d:DesignInstance local:Connection}">
+		    <ListView.ItemTemplate>
+			    <DataTemplate>
+				    <DockPanel LastChildFill="True" HorizontalAlignment="Stretch">
+					    <Button Click="Remove_Connection" DockPanel.Dock="Right" Content="X" ToolTip="Remove" VerticalAlignment="Center" />
+					    <Button Click="Edit_Connection" DockPanel.Dock="Right" Content="Edit" VerticalAlignment="Center" />
+					    <Button Click="Open_Connection" DockPanel.Dock="Right" Content="Open" VerticalAlignment="Center" />
+					    <TextBlock Text="{Binding Name}" DockPanel.Dock="Left" />
+				    </DockPanel>
+			    </DataTemplate>
+		    </ListView.ItemTemplate>
+	    </ListView>
+	    <Button Click="Add_Connection" HorizontalAlignment="Right" Grid.Row="1" Content="Add" />
+	</Grid>
+</UserControl>

@@ -5,37 +5,34 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Mqtt_Terminal"
         xmlns:prop="clr-namespace:Mqtt_Terminal.Properties"
+        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
         mc:Ignorable="d"
-        Title="Mqtt Terminal" Height="350" Width="525" Closed="Window_Closed">
+        Title="Mqtt Terminal" Height="350" Width="525" Closed="Window_Closed" Loaded="MainWindow_OnLoaded">
+	<Window.CommandBindings>
+		<CommandBinding x:Name="SaveLayoutCommandBinding" Executed="SaveLayout_OnExecuted"></CommandBinding>
+		<CommandBinding x:Name="ReloadLayoutCommandBinding" Executed="ReloadLayout_OnExecuted"></CommandBinding>
+		<CommandBinding x:Name="SaveCommandBinding" Executed="SaveConfiguration_OnExecuted"></CommandBinding>
+	</Window.CommandBindings>
+
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="auto" />
-			<RowDefinition Height="100px" />
 			<RowDefinition Height="*" />
-			<RowDefinition Height="auto" />
 		</Grid.RowDefinitions>
-		<Menu>
+		<Menu Grid.Row="0">
 			<MenuItem Header="{x:Static prop:Resources.File}">
-				<MenuItem Header="{x:Static prop:Resources.SaveConfiguration}" Click="Save_Configuration" />
+				<MenuItem x:Name="SaveMenuItem" Header="{x:Static prop:Resources.SaveConfiguration}" InputGestureText="Ctrl+S"/>
+			</MenuItem>
+			<MenuItem Header="Layout">
+				<MenuItem x:Name="SaveLayoutMenuItem" Header="{x:Static prop:Resources.LayoutSave}" InputGestureText="Alt+S"/>
+				<MenuItem x:Name="ReloadLayoutMenuItem" Header="{x:Static prop:Resources.LayoutReload}" InputGestureText="Alt+R" />
 			</MenuItem>
 			<MenuItem Header="{x:Static prop:Resources.Language}">
 				<MenuItem Header="{x:Static prop:Resources.English}" x:Name="EnglishMenu" IsCheckable="True" Click="Select_English" />
 				<MenuItem Header="{x:Static prop:Resources.German}" x:Name="GermanMenu" IsCheckable="True" Click="Select_German" />
 			</MenuItem>
 		</Menu>
-		<Image Grid.Row="1" Source="Resources/logo.png" HorizontalAlignment="Left" />
-		<ListView x:Name="ConListView" Grid.Row="2" d:DataContext="{d:DesignInstance local:Connection}">
-			<ListView.ItemTemplate>
-				<DataTemplate>
-					<DockPanel LastChildFill="True" HorizontalAlignment="Stretch">
-						<Button Click="Remove_Connection" DockPanel.Dock="Right" Content="X" ToolTip="Remove" VerticalAlignment="Center" />
-						<Button Click="Edit_Connection" DockPanel.Dock="Right" Content="Edit" VerticalAlignment="Center" />
-						<Button Click="Open_Connection" DockPanel.Dock="Right" Content="Open" VerticalAlignment="Center" />
-						<TextBlock Text="{Binding Name}" DockPanel.Dock="Left" />
-					</DockPanel>
-				</DataTemplate>
-			</ListView.ItemTemplate>
-		</ListView>
-		<Button Click="Add_Connection" HorizontalAlignment="Right" Grid.Row="3" Content="Add" />
+
+		<xcad:DockingManager Grid.Row="1" x:Name="DockingManager"  />
 	</Grid>
 </Window>

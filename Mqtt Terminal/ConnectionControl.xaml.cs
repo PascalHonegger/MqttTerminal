@@ -9,16 +9,17 @@ namespace Mqtt_Terminal
 	/// <summary>
 	///     Interaction logic for ConnectionWindow.xaml
 	/// </summary>
-	public partial class ConnectionWindow
+	public partial class ConnectionControl
 	{
+		private readonly List<ReceivedMessageArguments> _allMessages = new List<ReceivedMessageArguments>();
 		private readonly Connection _connection;
 
-		private readonly List<ReceivedMessageArguments> _allMessages = new List<ReceivedMessageArguments>();
-		private MessageBrokerClient _broker;
-
 		private readonly Subscription[] _subscriptions;
+		private readonly MessageBrokerClient _broker;
 
-		public ConnectionWindow(Connection connection)
+		private bool _subscribedToClose;
+
+		public ConnectionControl(Connection connection)
 		{
 			InitializeComponent();
 			DataContext = connection;
@@ -27,10 +28,25 @@ namespace Mqtt_Terminal
 			_subscriptions = _connection.SerializedSubscriptions
 				.Select(ss => new Subscription(ss.Topic, arg => ReceivedSubscription(ss, arg), ss.Qos)).ToArray();
 
-			Title = $"Connection {_connection.Name}";
 			ConnectButton.Content = $"Try connect to {_connection.Hostname}";
 
 			QosComboBox.SelectedItem = Qos.ExactlyOnce;
+
+			try
+			{
+				_broker = new MessageBrokerClient(_connection.Hostname, _connection.ClientId, _connection.CleanSession,
+					_connection.ConnectOnFailure, _connection.SubscribeOnFailure, _connection.ReconnectionInterval);
+			}
+			catch (Exception)
+			{
+				MessageBox.Show("Invalid hostname");
+				//TODO Close();
+				return;
+			}
+			_broker.ConnectionStateChanged += _broker_ConnectionStateChanged;
+
+			if (_connection.ConnectWhenOpened)
+				ConnectButton_Click(null, null);
 		}
 
 		private void _broker_ConnectionStateChanged(object sender, ConnectionStateChangedEventArgs e)
@@ -71,28 +87,18 @@ namespace Mqtt_Terminal
 			ApplyFilter();
 		}
 
-		private async void Window_Closed(object sender, EventArgs e)
-		{
-			if(_broker != null) await _broker.DisconnectAsync();
-		}
-
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
-			try
+			var window = Window.GetWindow(this);
+			if (window != null && !_subscribedToClose)
 			{
-				_broker = new MessageBrokerClient(_connection.Hostname, _connection.ClientId, _connection.CleanSession,
-					_connection.ConnectOnFailure, _connection.SubscribeOnFailure, _connection.ReconnectionInterval);
-			}
-			catch (Exception)
-			{
-				MessageBox.Show("Invalid hostname");
-				Close();
-				return;
-			}
-			_broker.ConnectionStateChanged += _broker_ConnectionStateChanged;
+				window.Closed += async (o, args) =>
+				{
+					if (_broker != null) await _broker.DisconnectAsync();
+				};
 
-			if (_connection.ConnectWhenOpened)
-				ConnectButton_Click(null, null);
+				_subscribedToClose = true;
+			}
 		}
 
 		private void PostTopic_Click(object sender, RoutedEventArgs e)
