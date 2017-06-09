@@ -8,97 +8,102 @@
         mc:Ignorable="d"
         Title="Add / Edit connection" Height="300" Width="300"
         d:DataContext="{d:DesignInstance local:Connection}">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="auto"/>
-        </Grid.RowDefinitions>
-        <Label Content="Connection name" HorizontalAlignment="Left"/>
-        <TextBox Text="{Binding Name}" HorizontalAlignment="Right" MinWidth="100"/>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="auto" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="auto" />
+		</Grid.RowDefinitions>
+		<Label Grid.Row="0" Content="Connection name" HorizontalAlignment="Left" />
+		<TextBox Grid.Row="0" Text="{Binding Name}" HorizontalAlignment="Right" MinWidth="100" />
 
-        <TabControl Grid.Row="1">
-            <TabItem Header="Connectivity" IsSelected="True">
-                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Label Content="{x:Static prop:Resources.ServerUri}" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center"/>
-                    <TextBox Text="{Binding Hostname}" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center"/>
+		<TabControl Grid.Row="1">
+			<TabItem Header="Connectivity" IsSelected="True">
+				<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="*" />
+						<RowDefinition Height="*" />
+						<RowDefinition Height="*" />
+						<RowDefinition Height="*" />
+						<RowDefinition Height="*" />
+						<RowDefinition Height="*" />
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="auto" />
+						<ColumnDefinition Width="auto" />
+					</Grid.ColumnDefinitions>
+					<Label Content="{x:Static prop:Resources.ServerUri}" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" />
+					<TextBox Text="{Binding Hostname}" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" />
 
-                    <Label Content="{x:Static prop:Resources.ClientId}" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center"/>
-                    <TextBox Text="{Binding ClientId}" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center"/>
+					<Label Content="{x:Static prop:Resources.ClientId}" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" />
+					<TextBox Text="{Binding ClientId}" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" />
 
-                    <Label Content="{x:Static prop:Resources.CleanSession}" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center"/>
-                    <CheckBox IsChecked="{Binding CleanSession}" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center"/>
+					<Label Content="{x:Static prop:Resources.CleanSession}" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" />
+					<CheckBox IsChecked="{Binding CleanSession}" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" />
 
-                    <Label Content="{x:Static prop:Resources.ReconnectOnFailure}" Grid.Column="0" Grid.Row="3" VerticalAlignment="Center"/>
-                    <CheckBox IsChecked="{Binding ConnectOnFailure}" Grid.Column="1" Grid.Row="3" VerticalAlignment="Center"/>
+					<Label Content="{x:Static prop:Resources.ReconnectOnFailure}" Grid.Column="0" Grid.Row="3"
+					       VerticalAlignment="Center" />
+					<CheckBox IsChecked="{Binding ConnectOnFailure}" Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" />
 
-                    <Label Content="{x:Static prop:Resources.ResubscribeOnFailure}" Grid.Column="0" Grid.Row="4" VerticalAlignment="Center"/>
-                    <CheckBox IsChecked="{Binding SubscribeOnFailure}" Grid.Column="1" Grid.Row="4" VerticalAlignment="Center"/>
+					<Label Content="{x:Static prop:Resources.ResubscribeOnFailure}" Grid.Column="0" Grid.Row="4"
+					       VerticalAlignment="Center" />
+					<CheckBox IsChecked="{Binding SubscribeOnFailure}" Grid.Column="1" Grid.Row="4" VerticalAlignment="Center" />
 
-                    <Label Content="{x:Static prop:Resources.ReconnectionInterval}" Grid.Column="0" Grid.Row="5" VerticalAlignment="Center"/>
-                    <TextBox Text="{Binding ReconnectionInterval}" Grid.Column="1" Grid.Row="5" VerticalAlignment="Center"/>
-                </Grid>
-            </TabItem>
-            <TabItem Header="Subscriptions">
-                <DockPanel LastChildFill="True">
-                    <Button Click="Add_Subscription" HorizontalAlignment="Right" DockPanel.Dock="Bottom" Content="Add"/>
-                    <ListView x:Name="SubListView" DockPanel.Dock="Top" >
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <Grid HorizontalAlignment="Stretch">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="100px"/>
-                                        <ColumnDefinition Width="auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBox Grid.Column="0" Text="{Binding Topic}" HorizontalAlignment="Stretch" VerticalAlignment="Center" MinWidth="50px"/>
-                                    <ComboBox Grid.Column="1" ItemsSource="{x:Static local:EditConnectionWindow.AllQos}" SelectedItem="{Binding Qos}"/>
-                                    <Button Click="Remove_Subscription" HorizontalAlignment="Right" Content="X" Grid.Column="3"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                </DockPanel>
-            </TabItem>
-            <TabItem Header="Other">
-                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Label Content="{x:Static prop:Resources.AutoOpen}" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center"/>
-                    <CheckBox IsChecked="{Binding OpenOnStartup}" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center"/>
+					<Label Content="{x:Static prop:Resources.ReconnectionInterval}" Grid.Column="0" Grid.Row="5"
+					       VerticalAlignment="Center" />
+					<TextBox Text="{Binding ReconnectionInterval}" Grid.Column="1" Grid.Row="5" VerticalAlignment="Center" />
+				</Grid>
+			</TabItem>
+			<TabItem Header="Subscriptions">
+				<DockPanel LastChildFill="True">
+					<Button Click="Add_Subscription" HorizontalAlignment="Right" DockPanel.Dock="Bottom" Content="Add" />
+					<ListView x:Name="SubListView" DockPanel.Dock="Top" d:DataContext="{d:DesignInstance local:ReceivedMessageArguments}">
+						<ListView.ItemTemplate>
+							<DataTemplate>
+								<Grid HorizontalAlignment="Stretch">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="100px" />
+										<ColumnDefinition Width="auto" />
+									</Grid.ColumnDefinitions>
+									<TextBox Grid.Column="0" Text="{Binding Topic}" HorizontalAlignment="Stretch" VerticalAlignment="Center"
+									         MinWidth="50px" />
+									<ComboBox Grid.Column="1" ItemsSource="{x:Static local:EditConnectionWindow.AllQos}"
+									          SelectedItem="{Binding Qos}" />
+									<Button Click="Remove_Subscription" HorizontalAlignment="Right" Content="X" Grid.Column="2" />
+								</Grid>
+							</DataTemplate>
+						</ListView.ItemTemplate>
+					</ListView>
+				</DockPanel>
+			</TabItem>
+			<TabItem Header="Other">
+				<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="*" />
+						<RowDefinition Height="*" />
+						<RowDefinition Height="*" />
+						<RowDefinition Height="*" />
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="auto" />
+						<ColumnDefinition Width="auto" />
+					</Grid.ColumnDefinitions>
+					<Label Content="{x:Static prop:Resources.AutoOpen}" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" />
+					<CheckBox IsChecked="{Binding OpenOnStartup}" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" />
 
-                    <Label Content="{x:Static prop:Resources.AutoConnect}" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center"/>
-                    <CheckBox IsChecked="{Binding ConnectWhenOpened}" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center"/>
+					<Label Content="{x:Static prop:Resources.AutoConnect}" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" />
+					<CheckBox IsChecked="{Binding ConnectWhenOpened}" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" />
 
-                    <Label Content="{x:Static prop:Resources.AutoSub}" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center"/>
-                    <CheckBox IsChecked="{Binding SubscribeWhenOpened}" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center"/>
+					<Label Content="{x:Static prop:Resources.AutoSub}" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" />
+					<CheckBox IsChecked="{Binding SubscribeWhenOpened}" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" />
 
-                    <Label Content="{x:Static prop:Resources.MaxMessages}" Grid.Column="0" Grid.Row="3" VerticalAlignment="Center"/>
-                    <TextBox Text="{Binding MaxMessagesStored}" Grid.Column="1" Grid.Row="3" VerticalAlignment="Center"/>
-                </Grid>
-            </TabItem>
-        </TabControl>
-        <Button HorizontalAlignment="Right" Click="Save_Click" Content="Save" Grid.Row="2"/>
-        <Button HorizontalAlignment="Left" Click="Cancel_Click" Content="Cancel" Grid.Row="2"/>
-    </Grid>
+					<Label Content="{x:Static prop:Resources.MaxMessages}" Grid.Column="0" Grid.Row="3" VerticalAlignment="Center" />
+					<TextBox Text="{Binding MaxMessagesStored}" Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" />
+				</Grid>
+			</TabItem>
+		</TabControl>
+		<Button HorizontalAlignment="Right" Click="Save_Click" Content="Save" Grid.Row="2" />
+		<Button HorizontalAlignment="Left" Click="Cancel_Click" Content="Cancel" Grid.Row="2" />
+	</Grid>
 </Window>

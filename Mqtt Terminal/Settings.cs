@@ -5,101 +5,99 @@ using System.Xml.Serialization;
 
 namespace Mqtt_Terminal
 {
-    public class SettingsManager
-    {
-        public static SettingsManager Instance { get; } = new SettingsManager();
+	public class SettingsManager
+	{
+		private readonly XmlSerializer _serializer = new XmlSerializer(typeof(Settings), "Mqtt.Terminal");
 
-        private string PathToSettings = Path.Combine(Path.GetTempPath(), "MqttSettings.xml");
+		private readonly string _pathToSettings = Path.Combine(Path.GetTempPath(), "MqttSettings.xml");
 
-        private XmlSerializer _serializer = new XmlSerializer(typeof(Settings), "Mqtt.Terminal");
+		public SettingsManager()
+		{
+			// Try to load settings if they already exist
+			if (File.Exists(_pathToSettings))
+				try
+				{
+					var contentIfExists = File.ReadAllText(_pathToSettings);
 
-        public Settings CurrentSettings { get; }
+					var reader = new StringReader(contentIfExists);
 
-        public void SaveSettings()
-        {
-            File.WriteAllText(PathToSettings, "");
+					CurrentSettings = (Settings) _serializer.Deserialize(reader);
+					return;
+				}
+				catch (Exception e)
+				{
+					MessageBox.Show(e.Message, "Error loading settings", MessageBoxButton.OK, MessageBoxImage.Error);
+				}
 
-            var stream = File.OpenWrite(PathToSettings);
+			// Use default settings if file couldn't be loaded
+			CurrentSettings = new Settings();
 
-            _serializer.Serialize(stream, CurrentSettings);
-        }
+			// Save these default settings for the future
+			SaveSettings();
+		}
 
-        public SettingsManager()
-        {
-            // Try to load settings if they already exist
-            if (File.Exists(PathToSettings))
-            {
-                try
-                {
-                    var contentIfExists =  File.ReadAllText(PathToSettings);
+		public static SettingsManager Instance { get; } = new SettingsManager();
 
-                    var reader = new StringReader(contentIfExists);
+		public Settings CurrentSettings { get; }
 
-                    CurrentSettings = (Settings)_serializer.Deserialize(reader);
-                    return;
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.Message, "Error loading settings", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
+		public void SaveSettings()
+		{
+			File.WriteAllText(_pathToSettings, "");
 
-            // Use default settings if file couldn't be loaded
-            CurrentSettings = new Settings();
+			var stream = File.OpenWrite(_pathToSettings);
 
-            // Save these default settings for the future
-            SaveSettings();
-        }
-    }
+			_serializer.Serialize(stream, CurrentSettings);
+		}
+	}
 
-    [Serializable]
-    public class Settings
-    {
-        public string Language { get; set; } = "en";
+	[Serializable]
+	public class Settings
+	{
+		public string Language { get; set; } = "en";
 
-        public Connection[] Connections { get; set; } = new Connection[0];
-    }
+		public Connection[] Connections { get; set; } = new Connection[0];
+	}
 
-    [Serializable]
-    public class Connection
-    {
-        public Connection()
-        {
-            var now = DateTime.Now;
-            var timeRange = now - now.Date;
-            ClientId = $"{Environment.MachineName}-{(int)timeRange.TotalMilliseconds}";
-            Name = $"{ClientId}@{Hostname}";
-        }
+	[Serializable]
+	public class Connection
+	{
+		public Connection()
+		{
+			var now = DateTime.Now;
+			var timeRange = now - now.Date;
+			ClientId = $"{Environment.MachineName}-{(int) timeRange.TotalMilliseconds}";
+			Name = $"{ClientId}@{Hostname}";
+		}
 
-        public string Name { get; set; }
+		public string Name { get; set; }
 
-        public string Hostname { get; set; } = "127.0.0.1";
+		public string Hostname { get; set; } = "127.0.0.1";
 
-        public string ClientId { get; set; }
+		public string ClientId { get; set; }
 
-        public bool CleanSession { get; set; } = true;
+		public bool CleanSession { get; set; } = true;
 
-        public bool ConnectOnFailure { get; set; } = true;
+		public bool ConnectOnFailure { get; set; } = true;
 
-        public bool SubscribeOnFailure { get; set; } = true;
+		public bool SubscribeOnFailure { get; set; } = true;
 
-        public int ReconnectionInterval { get; set; } = 5;
+		public int ReconnectionInterval { get; set; } = 5;
 
-        public SerializedSubscription[] SerializedSubscriptions { get; set; } = new SerializedSubscription[0];
+		public SerializedSubscription[] SerializedSubscriptions { get; set; } = new SerializedSubscription[0];
 
-        public bool OpenOnStartup { get; set; } = false;
+		public bool OpenOnStartup { get; set; } = false;
 
-        public bool ConnectWhenOpened { get; set; } = true;
+		public bool ConnectWhenOpened { get; set; } = true;
 
-        public bool SubscribeWhenOpened { get; set; } = false;
+		public bool SubscribeWhenOpened { get; set; } = false;
 
-        public int MaxMessagesStored { get; set; } = 5000;
-    }
+		public int MaxMessagesStored { get; set; } = 5000;
+	}
 
-    [Serializable]
-    public class SerializedSubscription
-    {
-        public string Topic { get; set; }
-        public Qos Qos { get; set; }
-    }
+	[Serializable]
+	public class SerializedSubscription
+	{
+		public string Topic { get; set; }
+		public Qos Qos { get; set; }
+	}
 }

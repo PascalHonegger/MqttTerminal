@@ -6,63 +6,62 @@ using System.Windows.Controls;
 
 namespace Mqtt_Terminal
 {
-    /// <summary>
-    /// Interaction logic for EditConnectionWindow.xaml
-    /// </summary>
-    public partial class EditConnectionWindow : Window
-    {
-        private readonly Connection _toEdit;
+	/// <summary>
+	///     Interaction logic for EditConnectionWindow.xaml
+	/// </summary>
+	public partial class EditConnectionWindow
+	{
+		private readonly Connection _toEdit;
 
-        public static List<Qos> AllQos { get; } = Enum.GetValues(typeof(Qos)).Cast<Qos>().ToList();
+		public EditConnectionWindow(Connection toEdit)
+		{
+			InitializeComponent();
 
-        public EditConnectionWindow(Connection toEdit)
-        {
-            InitializeComponent();
+			_toEdit = toEdit;
+			DataContext = toEdit;
 
-            _toEdit = toEdit;
-            DataContext = toEdit;
+			DisplaySubscriptions();
+		}
 
-            DisplaySubscriptions();
-        }
+		public static List<Qos> AllQos { get; } = Enum.GetValues(typeof(Qos)).Cast<Qos>().ToList();
 
-        private void Save_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = true;
-            Close();
-        }
+		private void Save_Click(object sender, RoutedEventArgs e)
+		{
+			DialogResult = true;
+			Close();
+		}
 
-        private void Cancel_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = false;
-            Close();
-        }
+		private void Cancel_Click(object sender, RoutedEventArgs e)
+		{
+			DialogResult = false;
+			Close();
+		}
 
-        private void Add_Subscription(object sender, RoutedEventArgs e)
-        {
-            _toEdit.SerializedSubscriptions = _toEdit.SerializedSubscriptions.Concat(new[] { new SerializedSubscription() }).ToArray();
-            DisplaySubscriptions();
-        }
+		private void Add_Subscription(object sender, RoutedEventArgs e)
+		{
+			_toEdit.SerializedSubscriptions = _toEdit.SerializedSubscriptions.Concat(new[] {new SerializedSubscription()})
+				.ToArray();
+			DisplaySubscriptions();
+		}
 
-        private void DisplaySubscriptions()
-        {
-            SubListView.Items.Clear();
+		private void DisplaySubscriptions()
+		{
+			SubListView.Items.Clear();
 
-            foreach (var subscription in _toEdit.SerializedSubscriptions)
-            {
-                SubListView.Items.Add(subscription);
-            }
-        }
+			foreach (var subscription in _toEdit.SerializedSubscriptions)
+				SubListView.Items.Add(subscription);
+		}
 
-        private void Remove_Subscription(object sender, RoutedEventArgs e)
-        {
-            // Clicked connection
-            var subscription = (SerializedSubscription)((Button)(sender)).DataContext;
+		private void Remove_Subscription(object sender, RoutedEventArgs e)
+		{
+			// Clicked connection
+			var subscription = (SerializedSubscription) ((Button) sender).DataContext;
 
-            // Remove it
-            _toEdit.SerializedSubscriptions = _toEdit.SerializedSubscriptions.Except(new[] { subscription }).ToArray();
+			// Remove it
+			_toEdit.SerializedSubscriptions = _toEdit.SerializedSubscriptions.Except(new[] {subscription}).ToArray();
 
-            // Update view
-            DisplaySubscriptions();
-        }
-    }
+			// Update view
+			DisplaySubscriptions();
+		}
+	}
 }
