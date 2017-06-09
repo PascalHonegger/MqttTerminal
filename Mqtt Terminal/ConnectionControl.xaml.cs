@@ -28,7 +28,7 @@ namespace Mqtt_Terminal
 			_subscriptions = _connection.SerializedSubscriptions
 				.Select(ss => new Subscription(ss.Topic, arg => ReceivedSubscription(ss, arg), ss.Qos)).ToArray();
 
-			ConnectButton.Content = $"Try connect to {_connection.Hostname}";
+			CheckConnectedSubscribedGui();
 
 			QosComboBox.SelectedItem = Qos.ExactlyOnce;
 
@@ -51,30 +51,42 @@ namespace Mqtt_Terminal
 
 		private void _broker_ConnectionStateChanged(object sender, ConnectionStateChangedEventArgs e)
 		{
-			IsConnectedText.Text = $"Is connected: {e.IsConnected}";
-			SubscribeButton.IsEnabled = e.IsConnected;
-			CheckSubscriptionState();
+			CheckConnectedSubscribedGui();
 		}
 
-		private void CheckSubscriptionState()
+		private void CheckConnectedSubscribedGui()
 		{
+			IsConnectedText.Text = $"Is connected: {_broker.IsConnected}";
 			IsSubscribedText.Text = $"Is subscribed: {_broker.IsConnected && _broker.HasSubscriptions}";
+
+			if (_broker.IsConnected)
+			{
+				if (!_broker.HasSubscriptions)
+				{
+					ConnectButton.Visibility = Visibility.Visible;
+					ConnectButton.Content = "Subscribe to topics";
+				}
+				else
+				{
+					ConnectButton.Visibility = Visibility.Collapsed;
+				}
+
+			}
+			else
+			{
+				ConnectButton.Visibility = Visibility.Visible;
+				ConnectButton.Content = $"Connect to {_connection.Hostname}";
+			}
 		}
 
 		private async void ConnectButton_Click(object sender, RoutedEventArgs e)
 		{
-			if (_connection.SubscribeWhenOpened)
-				await _broker.ConnectAsync(_connection.SubscribeWhenOpened, _subscriptions);
+			if (_broker.IsConnected || _connection.SubscribeWhenOpened)
+				await _broker.ConnectAsync(true, _subscriptions);
 			else
 				await _broker.ConnectAsync(_connection.SubscribeWhenOpened);
 
-			CheckSubscriptionState();
-		}
-
-		private async void SubscribeButton_Click(object sender, RoutedEventArgs e)
-		{
-			await _broker.ConnectAsync(true, _subscriptions);
-			CheckSubscriptionState();
+			CheckConnectedSubscribedGui();
 		}
 
 		private void ReceivedSubscription(SerializedSubscription ss, ReceivedMessageArguments arg)
