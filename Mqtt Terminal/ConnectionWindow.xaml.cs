@@ -71,9 +71,9 @@ namespace Mqtt_Terminal
 			ApplyFilter();
 		}
 
-		private void Window_Closed(object sender, EventArgs e)
+		private async void Window_Closed(object sender, EventArgs e)
 		{
-			if (_broker != null) _broker.SuspendReconnecting = true;
+			if(_broker != null) await _broker.DisconnectAsync();
 		}
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
