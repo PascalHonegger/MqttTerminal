@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace Mqtt_Terminal
 {
@@ -12,6 +14,8 @@ namespace Mqtt_Terminal
 	public partial class ConnectionControl
 	{
 		private readonly List<ReceivedMessageArguments> _allMessages = new List<ReceivedMessageArguments>();
+		private readonly ObservableCollection<ReceivedMessageArguments> _filteredMessages = new ObservableCollection<ReceivedMessageArguments>();
+
 		private readonly Connection _connection;
 
 		private readonly Subscription[] _subscriptions;
@@ -28,8 +32,6 @@ namespace Mqtt_Terminal
 			_subscriptions = _connection.SerializedSubscriptions
 				.Select(ss => new Subscription(ss.Topic, arg => ReceivedSubscription(ss, arg), ss.Qos)).ToArray();
 
-			CheckConnectedSubscribedGui();
-
 			QosComboBox.SelectedItem = Qos.ExactlyOnce;
 
 			try
@@ -45,6 +47,8 @@ namespace Mqtt_Terminal
 			}
 			_broker.ConnectionStateChanged += _broker_ConnectionStateChanged;
 
+			CheckConnectedSubscribedGui();
+
 			if (_connection.ConnectWhenOpened)
 				ConnectButton_Click(null, null);
 		}
@@ -56,6 +60,8 @@ namespace Mqtt_Terminal
 
 		private void CheckConnectedSubscribedGui()
 		{
+			if (_broker == null) return;
+
 			IsConnectedText.Text = $"Is connected: {_broker.IsConnected}";
 			IsSubscribedText.Text = $"Is subscribed: {_broker.IsConnected && _broker.HasSubscriptions}";
 
@@ -70,7 +76,6 @@ namespace Mqtt_Terminal
 				{
 					ConnectButton.Visibility = Visibility.Collapsed;
 				}
-
 			}
 			else
 			{
@@ -131,15 +136,34 @@ namespace Mqtt_Terminal
 
 		private void ApplyFilter()
 		{
-			ReceivedListView.Items.Clear();
+			var selected = ReceivedListView.SelectedItem;
+
+			_filteredMessages.Clear();
 
 			if (string.IsNullOrEmpty(FilterText.Text))
 				foreach (var item in _allMessages)
-					ReceivedListView.Items.Add(item);
+					_filteredMessages.Add(item);
 			else
-				foreach (var item in _allMessages.Where(m => m.Content.ToLowerInvariant()
-					.Contains(FilterText.Text.ToLowerInvariant())))
-					ReceivedListView.Items.Add(item);
+			{
+				var formattedFilterText = FilterText.Text.ToLowerInvariant();
+				foreach (var item in _allMessages.Where(m =>
+					m.Content.ToLowerInvariant().Contains(formattedFilterText) ||
+					m.Topic.ToLowerInvariant().Contains(formattedFilterText)))
+				{
+					_filteredMessages.Add(item);
+				}
+			}
+
+			ReceivedListView.SelectedItem = selected;
+
+			if (_collectionBindingEstablished) return;
+			ReceivedListView.ItemsSource = _filteredMessages;
+			var view = (CollectionView)CollectionViewSource.GetDefaultView(ReceivedListView.ItemsSource);
+			var groupDescription = new PropertyGroupDescription("Topic");
+			view.GroupDescriptions?.Add(groupDescription);
+			_collectionBindingEstablished = true;
 		}
+
+		private bool _collectionBindingEstablished = false;
 	}
 }
