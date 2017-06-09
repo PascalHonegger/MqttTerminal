@@ -1,61 +1,16 @@
 ﻿using System;
-using System.IO;
-using System.Windows;
-using System.Xml.Serialization;
+using System.Collections.Generic;
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace Mqtt_Terminal
 {
-	public class SettingsManager
-	{
-		private readonly XmlSerializer _serializer = new XmlSerializer(typeof(Settings), "Mqtt.Terminal");
-
-		private readonly string _pathToSettings = Path.Combine(Path.GetTempPath(), "MqttSettings.xml");
-
-		public SettingsManager()
-		{
-			// Try to load settings if they already exist
-			if (File.Exists(_pathToSettings))
-				try
-				{
-					var contentIfExists = File.ReadAllText(_pathToSettings);
-
-					var reader = new StringReader(contentIfExists);
-
-					CurrentSettings = (Settings) _serializer.Deserialize(reader);
-					return;
-				}
-				catch (Exception e)
-				{
-					MessageBox.Show(e.Message, "Error loading settings", MessageBoxButton.OK, MessageBoxImage.Error);
-				}
-
-			// Use default settings if file couldn't be loaded
-			CurrentSettings = new Settings();
-
-			// Save these default settings for the future
-			SaveSettings();
-		}
-
-		public static SettingsManager Instance { get; } = new SettingsManager();
-
-		public Settings CurrentSettings { get; }
-
-		public void SaveSettings()
-		{
-			File.WriteAllText(_pathToSettings, "");
-
-			var stream = File.OpenWrite(_pathToSettings);
-
-			_serializer.Serialize(stream, CurrentSettings);
-		}
-	}
-
 	[Serializable]
 	public class Settings
 	{
 		public string Language { get; set; } = "en";
 
-		public Connection[] Connections { get; set; } = new Connection[0];
+		public List<Connection> Connections { get; set; } = new List<Connection>();
 	}
 
 	[Serializable]
@@ -83,13 +38,13 @@ namespace Mqtt_Terminal
 
 		public int ReconnectionInterval { get; set; } = 5;
 
-		public SerializedSubscription[] SerializedSubscriptions { get; set; } = new SerializedSubscription[0];
+		public List<SerializedSubscription> SerializedSubscriptions { get; set; } = new List<SerializedSubscription>();
 
-		public bool OpenOnStartup { get; set; } = false;
+		public bool OpenOnStartup { get; set; }
 
 		public bool ConnectWhenOpened { get; set; } = true;
 
-		public bool SubscribeWhenOpened { get; set; } = false;
+		public bool SubscribeWhenOpened { get; set; }
 
 		public int MaxMessagesStored { get; set; } = 5000;
 	}

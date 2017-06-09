@@ -125,6 +125,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Settings.cs" />
+    <Compile Include="SettingsManager.cs" />
     <Compile Include="ViewModelBase.cs" />
     <Page Include="ConnectionWindow.xaml">
       <SubType>Designer</SubType>

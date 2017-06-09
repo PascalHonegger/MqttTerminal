@@ -39,8 +39,7 @@ namespace Mqtt_Terminal
 
 		private void Add_Subscription(object sender, RoutedEventArgs e)
 		{
-			_toEdit.SerializedSubscriptions = _toEdit.SerializedSubscriptions.Concat(new[] {new SerializedSubscription()})
-				.ToArray();
+			_toEdit.SerializedSubscriptions.Add(new SerializedSubscription());
 			DisplaySubscriptions();
 		}
 
@@ -58,7 +57,7 @@ namespace Mqtt_Terminal
 			var subscription = (SerializedSubscription) ((Button) sender).DataContext;
 
 			// Remove it
-			_toEdit.SerializedSubscriptions = _toEdit.SerializedSubscriptions.Except(new[] {subscription}).ToArray();
+			_toEdit.SerializedSubscriptions.Remove(subscription);
 
 			// Update view
 			DisplaySubscriptions();

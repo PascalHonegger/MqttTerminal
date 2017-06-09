@@ -84,8 +84,7 @@ namespace Mqtt_Terminal
 			var save = new EditConnectionWindow(connection).ShowDialog();
 
 			if (save == true)
-				SettingsManager.Instance.CurrentSettings.Connections = SettingsManager.Instance.CurrentSettings.Connections
-					.Concat(new[] {connection}).ToArray();
+				SettingsManager.Instance.CurrentSettings.Connections.Add(connection);
 
 			// Update view
 			DisplayConnectionInListView();
@@ -114,8 +113,7 @@ namespace Mqtt_Terminal
 			var connection = (Connection) ((Button) sender).DataContext;
 
 			// Remove it
-			SettingsManager.Instance.CurrentSettings.Connections = SettingsManager.Instance.CurrentSettings.Connections
-				.Except(new[] {connection}).ToArray();
+			SettingsManager.Instance.CurrentSettings.Connections.Remove(connection);
 
 			// Update view
 			DisplayConnectionInListView();
