@@ -44,7 +44,9 @@ namespace Mqtt_Terminal
 				CanHide = false
 			};
 
-			anchorable.AddToLayout(DockingManager, AnchorableShowStrategy.Top);
+			anchorable.AddToLayout(DockingManager, AnchorableShowStrategy.Left);
+
+			anchorable.DockAsDocument();
 
 
 			OpenConnectionWithAutoOpen();
@@ -108,7 +110,8 @@ namespace Mqtt_Terminal
 				CanHide = false
 			};
 
-			anchorable.AddToLayout(DockingManager, AnchorableShowStrategy.Top);
+			anchorable.AddToLayout(DockingManager, AnchorableShowStrategy.Right);
+			anchorable.DockAsDocument();
 		}
 
 		private void CheckMenuItems()

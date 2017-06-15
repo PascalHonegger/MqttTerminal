@@ -30,7 +30,7 @@ namespace Mqtt_Terminal
 
 		public string ClientId { get; set; }
 
-		public bool CleanSession { get; set; } = true;
+		public bool CleanSession { get; set; }
 
 		public bool ConnectOnFailure { get; set; } = true;
 
@@ -40,11 +40,11 @@ namespace Mqtt_Terminal
 
 		public List<SerializedSubscription> SerializedSubscriptions { get; set; } = new List<SerializedSubscription>();
 
-		public bool OpenOnStartup { get; set; }
+		public bool OpenOnStartup { get; set; } = true;
 
 		public bool ConnectWhenOpened { get; set; } = true;
 
-		public bool SubscribeWhenOpened { get; set; }
+		public bool SubscribeWhenOpened { get; set; } = true;
 
 		public int MaxMessagesStored { get; set; } = 5000;
 	}
@@ -52,7 +52,7 @@ namespace Mqtt_Terminal
 	[Serializable]
 	public class SerializedSubscription
 	{
-		public string Topic { get; set; }
+		public string Topic { get; set; } = "#";
 		public Qos Qos { get; set; }
 	}
 }
